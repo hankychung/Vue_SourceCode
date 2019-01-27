@@ -11,17 +11,26 @@
         el: document.querySelector('#app'),
         data: {
           name: 'Han',
-          age: 18
+          age: 18,
+          txt: 'reactive'
         }
       })
-      vm.$data.name = 'hello'
       window.vm = vm
     }
   </script>
 </head>
 <body>
   <div id="app">
-    <div class="name">{{name}}</div>
+    {{name}}
+    <div h-html="name"></div>
+    <input type="text" h-model="txt">
+    <div class="name">
+      {{name}}
+      <div>
+        {{age}}
+      </div>
+    </div>
+    {{name}}
     <div class="age">{{age}}</div>
   </div>
 </body>
