@@ -27,9 +27,18 @@ class Compiler {
     let nodes = Array.from(frag.childNodes)
     console.log(nodes)
     nodes.forEach(node => {
-      console.dir(node)
+      // console.dir(node)
       if (this.isElement(node)) {
-
+        console.log('node below --------------')
+        console.dir(node)
+        console.log(Array.from(node.attributes))
+        Array.from(node.attributes).forEach(attr => {
+          // 是否含有指令
+          if (/^h\-/.test(attr.name)) {
+            console.dir(attr)
+            this.handleDir(node, attr.value, attr.name.substring(2))
+          }
+        })
       }
       if (this.isText(node)) {
         this.handleText(node)
@@ -53,22 +62,47 @@ class Compiler {
       console.log(ctn)
       console.log(RegExp.$1)
       let exp = RegExp.$1
-      this.updator(node, exp)
+      this.updator(node, exp, 'text')
     }
   }
 
-  updator(node, exp) {
-    console.log('updator', node, exp)
-    console.dir(node)        
+  // 判断指令
+  handleDir(node, exp, dir) {
+    this.updator(node, exp, dir)
+  }
+
+  updator(node, exp, type) {
     new Watcher(this.$data, exp, () => {
-      console.log('inUpdator', node)
-      console.dir(node)
-      node.textContent = this.$data[exp]
-      return this.$data[exp]
+      this.updateFn(type, node, exp, this)
     })
   }
-}
 
+  updateFn(type, node, exp, _this) {
+    let updator = {
+      text() {
+        console.log('inUpdatorTHIS', this)
+        node.textContent = _this.$data[exp]
+        return _this.$data[exp]
+      },
+      html() {
+        console.log('html below----------')
+        console.dir(node)
+        node.innerHTML = _this.$data[exp]
+        return _this.$data[exp]
+      }
+    }    
+    return updator[type]()
+  }
+
+  // textUpdator(node, exp, val) {
+  //   console.log('inUpdator', node)
+  //   console.dir(node)
+  //   console.log(this)
+  //   node.textContent = val
+  //   return val
+  // }
+
+}
 class Watcher {
   constructor(vm, key, cb) {
     this.vm = vm
