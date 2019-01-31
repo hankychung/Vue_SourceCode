@@ -39,6 +39,7 @@ class Compiler {
             this.handleDir(node, attr.value, attr.name.substring(2))
           }
         })
+        this.compile(node)
       }
       if (this.isText(node)) {
         this.handleText(node)
@@ -87,7 +88,16 @@ class Compiler {
       html() {
         console.log('html below----------')
         console.dir(node)
-        node.innerHTML = _this.$data[exp]
+        node.innerHTML = exp
+        return exp
+      },
+      model() {
+        console.log('model below----------')
+        console.dir(node)
+        node.value = _this.$data[exp]
+        node.oninput = () => {
+          _this.$data[exp] = node.value
+        }
         return _this.$data[exp]
       }
     }    
